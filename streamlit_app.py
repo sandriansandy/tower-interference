@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Load model dan scaler
-model = joblib.load('model_xgb.pkl')
-scaler = joblib.load('scaler.pkl')
-feature_names = joblib.load('feature_names.pkl')
+model = joblib.load('./model_xgb.pkl')
+scaler = joblib.load('./scaler.pkl')
+feature_names = joblib.load('./feature_names.pkl')
 
 def preprocess_input(input_df):
     # Lakukan preprocessing sama seperti di training
