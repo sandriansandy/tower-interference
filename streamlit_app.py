@@ -6,14 +6,11 @@ import seaborn as sns
 
 # Load model dan scaler
 model = joblib.load('./model_xgb.pkl')
-scaler = joblib.load('./scaler.pkl')
+scaler = joblib.load('./scaler_model.pkl')
 feature_names = joblib.load('./feature_names.pkl')
 
 def preprocess_input(input_df):
     # Lakukan preprocessing sama seperti di training
-    # 1. Mapping manual untuk kolom tertentu
-    input_df['Kategori_Nilai_Pentanahan'] = input_df['Kategori_Nilai_Pentanahan'].str.lower().map({'buruk':0, 'baik':1})
-    
     # 2. Drop kolom yang sama
     input_df = input_df.drop(columns=['Nomor_Tower', 'Ruas_Pengantar'], errors='ignore')
     
@@ -58,15 +55,13 @@ if input_method == 'Single Prediction':
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            kategori_pentanahan = st.selectbox('Kategori Pentanahan', ['Baik', 'Buruk'])
-            usia_aset = st.slider('Usia Aset (tahun)', 0, 100, 5)
             count = st.number_input('Count', 0, 100, 0)
             count_minus = st.number_input('Count -', 0, 100, 0)
             count_plus = st.number_input('Count +', 0, 100, 0)
             percent_plus = st.number_input('% +', 0.0, 100.0, 0.0)
+            density = st.number_input('Density', 0.0, 10.0, 1.0)
             
         with col2:
-            density = st.number_input('Density', 0.0, 10.0, 1.0)
             min_ka = st.number_input('Min kA', min_value=-5000.0, value=0.0)
             max_ka = st.number_input('Max kA', min_value=-5000.0, value=0.0)
             mean_ka = st.number_input('Mean kA', min_value=-5000.0, value=0.0)
@@ -75,7 +70,6 @@ if input_method == 'Single Prediction':
             
         with col3:
             max_ka_minus = st.number_input('Max kA -', min_value=-5000.0, value=0.0)
-            mean_ka_minus = st.number_input('Mean kA -', min_value=-5000.0, value=0.0)
             min_ka_plus = st.number_input('Min kA +', min_value=-5000.0, value=0.0)
             max_ka_plus = st.number_input('Max kA +', min_value=-5000.0, value=0.0)
             mean_ka_plus = st.number_input('Mean kA +', 0.0, 1000.0, 50.0)
@@ -83,8 +77,6 @@ if input_method == 'Single Prediction':
 
     # Membuat dataframe input dengan URUTAN SESUAI TRAINING
     input_data = pd.DataFrame([[
-        kategori_pentanahan,      # Kategori_Nilai_Pentanahan
-        usia_aset,                # Usia_Aset
         count,                    # Count
         count_minus,              # Count_-
         count_plus,               # Count_+
@@ -96,14 +88,11 @@ if input_method == 'Single Prediction':
         exposure_factor,          # Exposure_factor
         min_ka_minus,             # Min_kA_-
         max_ka_minus,             # Max_kA_-
-        mean_ka_minus,            # Mean_kA_-
         min_ka_plus,              # Min_kA_+
         max_ka_plus,              # Max_kA_+
         mean_ka_plus,             # Mean_kA_+
         area                      # Area
     ]], columns=[
-        'Kategori_Nilai_Pentanahan',
-        'Usia_Aset',
         'Count',
         'Count_-',
         'Count_+',
@@ -115,7 +104,6 @@ if input_method == 'Single Prediction':
         'Exposure_factor',
         'Min_kA_-',
         'Max_kA_-',
-        'Mean_kA_-',
         'Min_kA_+',
         'Max_kA_+',
         'Mean_kA_+',
